@@ -1,6 +1,7 @@
 import server from "./server";
 
 function Wallet({ address, setAddress, balance, setBalance }) {
+  
   async function onChange(evt) {
     const address = evt.target.value;
     setAddress(address);
