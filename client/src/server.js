@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const server = axios.create({
-  baseURL: process.env.VITE_SERVER_URL,
+  baseURL: "http://localhost:3042",
 });
 
 export default server;
