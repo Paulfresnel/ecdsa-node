@@ -22,7 +22,11 @@ function App() {
   return (
     <header>
     <container className="header">
-    <h1>Experimental Purpose App</h1>
+    <h1>ECDSA Node Cryptography</h1>
+    <p>Send transactions from a Public Key Address to another one through
+    secured hashing and private Key Address authentication to ensure a 
+    valid signature to confirm the digital blueprint of the account owner</p>
+    <h4><em>Experimental Purpose App</em></h4>
     <p>For testing purposes please use one of the following Public Addresses to transfer funds to one another</p>
     <ul>
       <li>{`0x${balances[0].slice(-20)}`}</li>
