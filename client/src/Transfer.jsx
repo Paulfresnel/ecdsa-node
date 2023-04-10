@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import server from "./server";
 
 
-function Transfer({ address, setBalance, isSigned, setIsSigned }) {
+function Transfer({ address, setBalance, isSigned, setIsSigned, transactions, setTransactions}) {
   const [sendAmount, setSendAmount] = useState("");
   const [recipient, setRecipient] = useState("");
+  const [transferMessage, setTransferMessage] = useState();
 
 
   const setValue = (setter) => (evt) => setter(evt.target.value);
@@ -16,9 +17,16 @@ function Transfer({ address, setBalance, isSigned, setIsSigned }) {
       const isSigned = await server.post('approve', data);
       const signedState = isSigned.data.isSigned;
       setIsSigned(signedState);
+      
     } catch(err){
       console.log(err);
+      alert('There was an error on the server side, try refreshing the page')
     }
+  }
+
+  const updatedState = (e) =>{
+    setIsSigned(false);
+    setSendAmount(e.target.value);
   }
 
   async function transfer(evt) {
@@ -34,10 +42,23 @@ function Transfer({ address, setBalance, isSigned, setIsSigned }) {
         isSigned
       });
       setBalance(balance);
-    } catch (ex) {
-      alert(ex.response.data.message);
+      setTransferMessage(true);
+      console.log('txs before:', transactions);
+      let data2 = {sender:address, recipient:recipient, amount:parseInt(sendAmount)}
+      console.log("data2:",data2)
+      setTransactions([...transactions, {sender: address, recipient:recipient, amount:parseInt(sendAmount)}]);    
+      console.log('txs after:',transactions) ;
+      setTimeout(()=>{
+        setTransferMessage(false);
+      }, 1000)
+    } catch (err) {
+      alert(err);
     }
   }
+
+  useEffect(()=>{
+    setIsSigned(false);
+  },[])
 
   return (
     <form className="container transfer" >
@@ -48,7 +69,7 @@ function Transfer({ address, setBalance, isSigned, setIsSigned }) {
         <input
           placeholder="1, 2, 3..."
           value={sendAmount}
-          onChange={setValue(setSendAmount)}
+          onChange={(e)=>updatedState(e)}
         ></input>
       </label>
 
@@ -64,6 +85,7 @@ function Transfer({ address, setBalance, isSigned, setIsSigned }) {
       {isSigned ? <input type="submit" onClick={transfer} className="button" value="Transfer" /> : 
                   <button onClick={(e)=>setApproval(e)}>Set Approval</button>
       }
+       {transferMessage && <p>Transfer successful</p>}
     </form>
   );
 }

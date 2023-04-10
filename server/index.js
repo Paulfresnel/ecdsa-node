@@ -46,7 +46,7 @@ app.post("/send", async (req, res) => {
   let addressIndex;
 
   const addresesArray = Object.keys(balances);
-
+  try{
     addresesArray.filter(address => {
       if (recipient.length>=20  && address.includes(sender.slice(2))){
         sender = address;
@@ -72,6 +72,10 @@ app.post("/send", async (req, res) => {
     balances[recipient] += amount;
     res.send({ balance: balances[sender] });
   }
+  } catch(err){
+    console.log(err);
+    res.status(400).json("There was an error on the server side")
+  }
 });
 
 app.post('/approve', async (req,res)=>{
@@ -92,13 +96,14 @@ app.post('/approve', async (req,res)=>{
         return sender, addressIndex;
       }
     });
-
+    console.log("index:", addressIndex)
     const privateKey = privateKeys[addressIndex];
     const signature = await secp.signSync(dataHexed, privateKey);
     const isSigned = await secp.verify(signature, dataHexed, sender);
     res.json({isSigned: isSigned});
   } catch(err){
     console.log(err)
+    res.status(400).json("A server error occured, please try refreshing the page")
   }
 })
 
